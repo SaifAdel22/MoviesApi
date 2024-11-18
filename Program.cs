@@ -1,12 +1,4 @@
-using Microsoft.OpenApi.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using MoviesApi.Models;
-using MoviesApi.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace WepAPIDotNet
 {
@@ -19,31 +11,34 @@ namespace WepAPIDotNet
             // Add services to the container
             builder.Services.AddControllers();
 
-            // Add Swagger generation (basic config)
+            // Add Swagger generation
             builder.Services.AddSwaggerGen();
 
-            //Add DbContext
+            // Add DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-             options.UseSqlServer(builder.Configuration.GetConnectionString("DefultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefultConnection")));
 
-            //// Add repositories
+            // Add repositories
             builder.Services.AddScoped<IGenresServ, GenresServ>();
             builder.Services.AddScoped<IMoviesServ, MoviesServ>();
-            //builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+            builder.Services.AddScoped<IFeedbackServ, FeedbackServ>();
 
+            // Add AutoMapper
             builder.Services.AddAutoMapper(typeof(Program));
 
             // Add Identity
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequiredLength = 4;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false; // Disable lowercase requirement
+                options.Password.RequireLowercase = false;
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+ .AddEntityFrameworkStores<ApplicationDbContext>()
+ .AddDefaultTokenProviders();
+
+
 
             // Add Authentication (JWT)
             builder.Services.AddAuthentication(options =>
@@ -62,7 +57,8 @@ namespace WepAPIDotNet
                     ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
                     ValidateAudience = true,
                     ValidAudience = builder.Configuration["JWT:ValidAudience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
+                    ValidateIssuerSigningKey = true
                 };
             });
 
@@ -71,7 +67,7 @@ namespace WepAPIDotNet
             {
                 options.AddPolicy("MyPolicy", policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.WithOrigins("http://yourfrontenddomain.com")
                           .AllowAnyMethod()
                           .AllowAnyHeader();
                 });
@@ -109,21 +105,21 @@ namespace WepAPIDotNet
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-                Name = "Bearer",
-                In = ParameterLocation.Header
-            },
-            new List<string>()
-        }
-    });
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
             });
 
             var app = builder.Build();
@@ -131,9 +127,8 @@ namespace WepAPIDotNet
             // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
-                // Enable Swagger middleware
                 app.UseSwagger();
-                app.UseSwaggerUI();  // Swagger UI at default location
+                app.UseSwaggerUI();
             }
 
             app.UseStaticFiles();

@@ -17,5 +17,8 @@
 
         public Genre? Genre { get; set; }
         public byte GenreId { get; set; }
+        public List<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+        public List<MovieCast> MovieCasts { get; set; } // Navigation property
+
     }
 }

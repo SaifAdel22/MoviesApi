@@ -12,7 +12,7 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class AccountController(
      UserManager<ApplicationUser> userManager,
-     RoleManager<IdentityRole> roleManager,
+     RoleManager<IdentityRole<Guid>> roleManager,
      SignInManager<ApplicationUser> signInManager,
      IConfiguration configuration) : Controller
     {
@@ -53,9 +53,11 @@ namespace MoviesApi.Controllers
                     var userRoles = await userManager.GetRolesAsync(user);
                     List<Claim> claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.NameIdentifier, user.Id),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                         new Claim(ClaimTypes.Name, user.UserName),
+                        //new Claim(ClaimTypes.Role, user.Role), // Add the role here
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+
                     };
 
                     claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -81,7 +83,7 @@ namespace MoviesApi.Controllers
             }
             return BadRequest(ModelState);
         }
-        [Authorize("Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("AddRole")]
         public async Task<IActionResult> AddRole(string roleName)
@@ -96,18 +98,23 @@ namespace MoviesApi.Controllers
             {
                 return BadRequest("Role already exists.");
             }
-            IdentityRole identityRole  = new IdentityRole();
-            identityRole.Name = roleName;
+
+            // Use IdentityRole<Guid> instead of IdentityRole
+            IdentityRole<Guid> identityRole = new IdentityRole<Guid>
+            {
+                Name = roleName
+            };
 
             var result = await roleManager.CreateAsync(identityRole);
             if (result.Succeeded)
             {
-                return Ok("Role created successfully.");
+                return Ok(new { RoleName = roleName });
             }
 
             return BadRequest(result.Errors);
         }
-        [Authorize("Admin")]
+
+        //[Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("AssignRoleToUser")]
         public async Task<IActionResult> AssignRoleToUser(string userName, string roleName)
@@ -124,6 +131,7 @@ namespace MoviesApi.Controllers
                 return BadRequest("Role does not exist.");
             }
 
+            // Use IdentityRole<Guid> instead of IdentityRole
             var result = await userManager.AddToRoleAsync(user, roleName);
             if (result.Succeeded)
             {
@@ -132,5 +140,6 @@ namespace MoviesApi.Controllers
 
             return BadRequest(result.Errors);
         }
+
     }
 }
