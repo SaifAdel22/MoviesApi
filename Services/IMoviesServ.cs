@@ -7,5 +7,6 @@
         Task<Movie> Add(Movie movie);
         Movie Update(Movie movie);
         Movie Delete(Movie movie);
+        Task<List<MovieCastDTO>> GetMoviesByCast(int castId);
     }
 }

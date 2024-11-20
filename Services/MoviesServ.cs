@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MoviesApi.DTO;
 
 namespace MoviesApi.Services
 {
@@ -47,6 +48,25 @@ namespace MoviesApi.Services
 
             return movie;
         }
+        public async Task<List<MovieCastDTO>> GetMoviesByCast(int castId)
+        {
+            var movieList = await context.MovieCasts
+                .Where(mc => mc.CastId == castId)
+                .Include(mc => mc.Movie)  // Eager load the Movie entity
+                .Select(mc => mc.Movie)   // Select the Movie entity directly
+                .Select(movie => new MovieCastDTO
+                {
+                    Title = movie.Title,
+                    Year = movie.Year,
+                    Rate = movie.Rate,
+                    Storeline = movie.StoreLine,
+                    // Do not include 'Poster' or 'MovieCasts' in the projection
+                })
+                .ToListAsync();
+
+            return movieList;
+        }
+
 
     }
 }

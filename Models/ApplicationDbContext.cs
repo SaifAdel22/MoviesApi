@@ -11,7 +11,9 @@ namespace MoviesApi.Models
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<Cast> Casts { get; set; }
         public DbSet<MovieCast> MovieCasts { get; set; }
+        public DbSet<WatchList> WatchLists { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +43,19 @@ namespace MoviesApi.Models
                 .HasOne(mc => mc.Cast)
                 .WithMany(c => c.MovieCasts)
                 .HasForeignKey(mc => mc.CastId);
+
+            modelBuilder.Entity<WatchList>()
+       .HasKey(wl => new { wl.MovieId, wl.UserId });
+
+            modelBuilder.Entity<WatchList>()
+                .HasOne(wl => wl.Movie)
+                .WithMany(m => m.WatchLists)
+                .HasForeignKey(wl => wl.MovieId);
+
+            modelBuilder.Entity<WatchList>()
+                .HasOne(wl => wl.User)
+                .WithMany(u => u.WatchLists)
+                .HasForeignKey(wl => wl.UserId);
         }
     }
 }

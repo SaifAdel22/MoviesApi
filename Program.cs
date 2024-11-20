@@ -22,6 +22,8 @@ namespace WepAPIDotNet
             builder.Services.AddScoped<IGenresServ, GenresServ>();
             builder.Services.AddScoped<IMoviesServ, MoviesServ>();
             builder.Services.AddScoped<IFeedbackServ, FeedbackServ>();
+            builder.Services.AddScoped<ICastServ, CastServ>();
+            builder.Services.AddScoped<IWatchListServ, WatchListServ>();
 
             // Add AutoMapper
             builder.Services.AddAutoMapper(typeof(Program));

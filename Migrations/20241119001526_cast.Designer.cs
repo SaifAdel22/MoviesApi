@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoviesApi.Models;
 
@@ -11,9 +12,11 @@ using MoviesApi.Models;
 namespace MoviesApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241119001526_cast")]
+    partial class cast
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -346,21 +349,6 @@ namespace MoviesApi.Migrations
                     b.ToTable("MovieCasts");
                 });
 
-            modelBuilder.Entity("MoviesApi.Models.WatchList", b =>
-                {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("MovieId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("WatchLists");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -461,30 +449,6 @@ namespace MoviesApi.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("MoviesApi.Models.WatchList", b =>
-                {
-                    b.HasOne("MoviesApi.Models.Movie", "Movie")
-                        .WithMany("WatchLists")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MoviesApi.Models.ApplicationUser", "User")
-                        .WithMany("WatchLists")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MoviesApi.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("WatchLists");
-                });
-
             modelBuilder.Entity("MoviesApi.Models.Cast", b =>
                 {
                     b.Navigation("MovieCasts");
@@ -495,8 +459,6 @@ namespace MoviesApi.Migrations
                     b.Navigation("Feedbacks");
 
                     b.Navigation("MovieCasts");
-
-                    b.Navigation("WatchLists");
                 });
 #pragma warning restore 612, 618
         }
