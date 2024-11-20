@@ -22,7 +22,7 @@ public class FeedbackController : ControllerBase
         this.userManager = userManager;
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User")]
     [HttpPost]
     public async Task<IActionResult> SubmitFeedback(FeedbackDTO feedback)
     {

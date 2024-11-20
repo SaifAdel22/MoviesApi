@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MoviesApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class CastController(ICastServ castServ, IMoviesServ moviesServ) : ControllerBase
     {
+
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> AddAsync(CastDTO castDTO)
         {
             if (!ModelState.IsValid)
@@ -29,6 +34,8 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "User")]
+
         public async Task<IActionResult> GetAll()
         {
             if (!ModelState.IsValid)
@@ -41,6 +48,8 @@ namespace MoviesApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Update(CastDTO castDTO, int id)
         {
             if (!ModelState.IsValid)
@@ -60,6 +69,9 @@ namespace MoviesApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+
+
         public async Task<IActionResult> Delete(int id)
         {
             if (!ModelState.IsValid)
@@ -73,6 +85,8 @@ namespace MoviesApi.Controllers
             return Ok(exist);
         }
         [HttpPost("AssignCastToMovie/{castId}/{movieId}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> AssignCastToMovie(int castId, int movieId)
         {
             // Check if the cast member exists
@@ -100,6 +114,8 @@ namespace MoviesApi.Controllers
             return Ok($"Actor with ID: {castId} has been assigned to Movie with ID: {movieId}");
         }
         [HttpGet("GetCastByMovie/{movieId}")]
+        [Authorize(Roles = "User")]
+
         public async Task<IActionResult> GetCastByMovie(int movieId)
         {
             var castList = await castServ.GetCastByMovie(movieId);
@@ -110,6 +126,8 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("GetMoviesByCast/{castId}")]
+        [Authorize(Roles = "User")]
+
         public async Task<IActionResult> GetMoviesByCast(int castId)
         {
             var movieList = await moviesServ.GetMoviesByCast(castId);

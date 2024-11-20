@@ -83,7 +83,7 @@ namespace MoviesApi.Controllers
             }
             return BadRequest(ModelState);
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("AddRole")]
         public async Task<IActionResult> AddRole(string roleName)
@@ -114,7 +114,7 @@ namespace MoviesApi.Controllers
             return BadRequest(result.Errors);
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("AssignRoleToUser")]
         public async Task<IActionResult> AssignRoleToUser(string userName, string roleName)

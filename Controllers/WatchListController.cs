@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -8,6 +9,8 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class WatchListController(IMoviesServ moviesServ, IWatchListServ watchListServ, UserManager<ApplicationUser> userManager) : ControllerBase
     {
+        [Authorize(Roles = "User")]
+
         private Guid? GetUserId()
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -19,6 +22,7 @@ namespace MoviesApi.Controllers
 
             return userId;
         }
+        [Authorize(Roles = "User")]
 
         [HttpPost("AddMovieToYourWatchList/{movieid}")]
         public async Task<IActionResult> Add([FromRoute] int movieid)
@@ -44,6 +48,7 @@ namespace MoviesApi.Controllers
 
             return Ok("Movie Added To WatchList Successfully");
         }
+        [Authorize(Roles = "User")]
 
         [HttpDelete("RemoveMovieFromYourWatchList/{movieid}")]
         public async Task<IActionResult> Delete([FromRoute] int movieid)

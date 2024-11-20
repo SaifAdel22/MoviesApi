@@ -59,7 +59,7 @@ namespace MoviesApi.Controllers
 
             return Ok(data);
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromForm] MovieDTO dto)
@@ -88,7 +88,7 @@ namespace MoviesApi.Controllers
             return Ok(movie);
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromForm] MovieDTO dto)
@@ -128,7 +128,7 @@ namespace MoviesApi.Controllers
 
             return Ok(movie);
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)

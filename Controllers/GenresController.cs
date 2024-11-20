@@ -26,7 +26,7 @@ namespace MoviesApi.Controllers
             return Ok(genres);
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
 
         [HttpPost]
         public async Task <IActionResult> CreateAstnc(GenreDTO createGenreDTO)
@@ -35,7 +35,7 @@ namespace MoviesApi.Controllers
             await genresServ.Add(genre);
             return Ok(genre);
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(byte id, GenreDTO dto)
@@ -52,7 +52,7 @@ namespace MoviesApi.Controllers
 
             return Ok(genre);
         }
-            //[Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
 
 
         [HttpDelete("{id}")]
